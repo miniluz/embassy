@@ -1,0 +1,19 @@
+[build]
+target = "thumbv7em-none-eabihf"
+
+[target.thumbv7em-none-eabihf]
+rustflags = [
+  "-C", "link-arg=-Tlink.x",
+  "-C", "link-arg=-Tdefmt.x",
+]
+runner = [
+  "probe-rs",
+  "run",
+  "--chip",
+  "STM32H723ZG",
+  "--log-format",
+  "{t} {L} {s}",
+]
+
+[env]
+DEFMT_LOG = "trace"
