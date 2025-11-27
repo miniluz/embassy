@@ -975,7 +975,21 @@ impl<'d, const MAX_EP_COUNT: usize> embassy_usb_driver::Bus for Bus<'d, MAX_EP_C
                     regs.diepctl(ep_addr.index()).modify(|w| {
                         w.set_usbaep(enabled);
                         w.set_cnak(enabled); // clear NAK that might've been set by SNAK above.
-                    })
+                    });
+
+                    // Flush tx fifo when enabling to clear any stale data
+                    if enabled {
+                        regs.grstctl().write(|w| {
+                            w.set_txfflsh(true);
+                            w.set_txfnum(ep_addr.index() as _);
+                        });
+                        loop {
+                            let x = regs.grstctl().read();
+                            if !x.txfflsh() {
+                                break;
+                            }
+                        }
+                    }
                 });
 
                 // Wake `Endpoint::wait_enabled()`

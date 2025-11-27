@@ -2,7 +2,9 @@
 //!
 //! Contains:
 //! - The `speaker` class with a single audio streaming interface (host to device)
+//! - The `microphone` class with a single audio streaming interface (device to host)
 
+pub mod microphone;
 pub mod speaker;
 
 mod class_codes;
